@@ -1,0 +1,109 @@
+// <!-- <h1>Rahul</h1> -->
+<script>
+  $(document).ready(function () {
+    // Activate tooltip
+    $('[data-toggle="tooltip"]').tooltip();
+
+    // Select/Deselect checkboxes
+    var checkbox = $('table tbody input[type="checkbox"]');
+
+    $("#selectAll").click(function () {
+      if (this.checked) {
+        checkbox.each(function () {
+          this.checked = true;
+        });
+      } else {
+        checkbox.each(function () {
+          this.checked = false;
+        });
+      }
+    });
+
+    checkbox.click(function () {
+      if (!this.checked) {
+        $("#selectAll").prop("checked", false);
+      }
+    });
+
+    // Ajax to add data
+    $("#addEmployeeModal form").on("submit", function (e) {
+      e.preventDefault();
+      var formData = $(this).serialize();
+      console.log(formData);
+      $.ajax({
+        type: "POST",
+        url: "https://nodejs-query-api.herokuapp.com/users",
+        data: formData,
+        success: function (resultData) {
+          console.log(resultData);
+          $("#addEmployeeModal .msg").text("Record inserted");
+        },
+      });
+    });
+
+    // edit data
+    $(".container-xl .edit").on("click", function () {
+      var name = $(this).closest("tr").find("td:first-child").text();
+      var email = $(this).closest("tr").find("td:nth-child(2)").text();
+      var address = $(this).closest("tr").find("td:nth-child(3)").text();
+      var number = $(this).closest("tr").find("td:nth-child(4)").text();
+      var id = $(this).data("id");
+      $('#editEmployeeModal [name="id"]').val(id);
+      $('#editEmployeeModal [name="name"]').val(name);
+      $('#editEmployeeModal [name="email"]').val(email);
+      $('#editEmployeeModal [name="address"]').val(address);
+      $('#editEmployeeModal [name="phone"]').val(number);
+    });
+
+    // ajax to update data
+    $("#editEmployeeModal form").on("submit", function (e) {
+      e.preventDefault();
+      var formData = $(this).serialize();
+      console.log(formData);
+      $.ajax({
+        type: "PUT",
+        url: "/users",
+        data: formData,
+        async: false,
+        success: function (resultData) {
+          console.log(resultData);
+          $("#editEmployeeModal .msg").text("Record updated");
+        },
+        fail: function(xhr, textStatus, errorThrown){
+            console.log(xhr, textStatus, errorThrown);
+        }
+      });
+  
+      $.ajax({
+        type: "get",
+        url: "/",
+        success: function (resultData) {
+          console.log(resultData);
+          $("#editEmployeeModal .msg").text("Updated record inserted.");
+        },
+      });
+    });
+
+    // Delete data
+    $(".container-xl .delete").on("click", function () {
+      var id = $(this).data("id");
+      $('#deleteEmployeeModal [name="id"]').val(id);
+    });
+
+    // ajax to Delete data
+    $("#deleteEmployeeModal form").on("submit", function (e) {
+      e.preventDefault();
+      var formData = $(this).serialize();
+      console.log(formData);
+      $.ajax({
+        type: "DELETE",
+        url: "/users",
+        data: formData,
+        success: function (resultData) {
+          console.log(resultData);
+          $("#deleteEmployeeModal .msg").text("Record deleted");
+        },
+      });
+    });
+  });
+</script>
